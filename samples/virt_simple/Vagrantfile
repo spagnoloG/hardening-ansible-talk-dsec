@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2004"
+
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.qemu_use_session = false
+  end
+
+  config.vm.define "ubuntu-server-handson" do |rootNode|
+   rootNode.vm.hostname = "ubuntu-server-handson"
+   rootNode.vm.provider :kvm do | kvm, override |
+      kvm.memory_size = '2048m'
+    end
+    rootNode.vm.provider :libvirt do |libvirt, override|
+      libvirt.memory = 1024 
+      libvirt.nested = true
+      libvirt.cpus = 1
+    end
+  end
+end
+
