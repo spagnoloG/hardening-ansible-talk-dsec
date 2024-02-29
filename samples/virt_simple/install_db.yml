@@ -1,0 +1,47 @@
+---
+- name: Install and configure MariaDB server
+  hosts: all
+  become: true  # Equivalent to using sudo
+  vars:
+    mariadb_root_password: 'your_root_password_here'
+    remove_anonymous_users: 'y'
+    disallow_root_login_remotely: 'y'
+    remove_test_database: 'y'
+    reload_privilege_tables_now: 'y'
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeatedly updating
+
+    - name: Install MariaDB server
+      ansible.builtin.apt:
+        name: mariadb-server
+        state: present
+
+    - name: Start MariaDB service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Ensure expect is installed (Required for mysql_secure_installation automation)
+      ansible.builtin.apt:
+        name: expect
+        state: present
+
+    - name: Secure MariaDB installation
+      ansible.builtin.expect:
+        command: mysql_secure_installation
+        responses:
+          'Enter current password for root (enter for none):': ''
+          'Set root password? [Y/n]': 'Y'
+          'New password:': '{{ mariadb_root_password }}'
+          'Re-enter new password:': '{{ mariadb_root_password }}'
+          'Remove anonymous users? [Y/n]': '{{ remove_anonymous_users }}'
+          'Disallow root login remotely? [Y/n]': '{{ disallow_root_login_remotely }}'
+          'Remove test database and access to it? [Y/n]': '{{ remove_test_database }}'
+          'Reload privilege tables now? [Y/n]': '{{ reload_privilege_tables_now }}'
+        echo: yes
+        timeout: 30 # Adjust timeout as needed

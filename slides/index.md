@@ -29,7 +29,7 @@ Ljubljana FRI, April 2024
     </div>
 </div>
 
-
+---
 --- 
 ### Installing software on Linux
 
@@ -38,12 +38,11 @@ Let's install `mariadb` on `ubuntu`:
 Following [DigitalOcean tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-ubuntu-20-04)
 
 ```bash
-sudo apt update
-sudo apt install mariadb-server
+sudo apt update -y
+sudo apt install mariadb-server -y
 sudo systemctl start mariadb.service
+sudo mysql_secure_installation
 ```
-
----
 
 ---
 # Join us

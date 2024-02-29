@@ -1,5 +1,5 @@
 {
-  description = "Python development environment";
+  description = "Vagrant environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
@@ -18,14 +18,29 @@
           vagrant
         ];
 
+        vagrantPlugins = [
+            "vagrant-hostsupdater"
+            "vagrant-netinfo"
+        ];
+
+
+        # Create a shellHook to install the Vagrant plugins
+        setupVagrantPlugins = pkgs.lib.concatMapStrings (plugin: ''
+          if ! vagrant plugin list | grep -q ${plugin}; then
+            echo "Installing Vagrant plugin: ${plugin}"
+            vagrant plugin install ${plugin}
+          else
+            echo "Vagrant plugin ${plugin} is already installed."
+          fi
+        '') vagrantPlugins;
+
       in {
         devShells.default = pkgs.mkShell {
-          buildInputs = [
-            vagrant_env
-          ];
+          buildInputs = vagrant_env;
+
+          shellHook = setupVagrantPlugins;
         };
       }
     );
 }
-
 
