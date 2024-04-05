@@ -1,9 +1,10 @@
 ---
 - name: Install and configure MariaDB server
   hosts: all
-  become: true  # Equivalent to using sudo
+  become: true
+  strategy: free
   vars:
-    mariadb_root_password: 'your_root_password_here'
+    mariadb_root_password: 'r00t'
     remove_anonymous_users: 'y'
     disallow_root_login_remotely: 'y'
     remove_test_database: 'y'
@@ -13,7 +14,7 @@
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: yes
-        cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeatedly updating
+        cache_valid_time: 3600
 
     - name: Install MariaDB server
       ansible.builtin.apt:
@@ -28,20 +29,21 @@
 
     - name: Ensure expect is installed (Required for mysql_secure_installation automation)
       ansible.builtin.apt:
-        name: expect
+        name: 
+          - expect
         state: present
 
     - name: Secure MariaDB installation
       ansible.builtin.expect:
         command: mysql_secure_installation
         responses:
-          'Enter current password for root (enter for none):': ''
-          'Set root password? [Y/n]': 'Y'
+          'Enter current password for root \(enter for none\):': "\n"
+          'Set root password? \[Y\/n\]': 'Y'
           'New password:': '{{ mariadb_root_password }}'
           'Re-enter new password:': '{{ mariadb_root_password }}'
-          'Remove anonymous users? [Y/n]': '{{ remove_anonymous_users }}'
-          'Disallow root login remotely? [Y/n]': '{{ disallow_root_login_remotely }}'
-          'Remove test database and access to it? [Y/n]': '{{ remove_test_database }}'
-          'Reload privilege tables now? [Y/n]': '{{ reload_privilege_tables_now }}'
+          'Remove anonymous users? \[Y\/n\]': '{{ remove_anonymous_users }}'
+          'Disallow root login remotely? \[Y\/n\]': '{{ disallow_root_login_remotely }}'
+          'Remove test database and access to it? \[Y\/n\]': '{{ remove_test_database }}'
+          'Reload privilege tables now? \[Y\/n\]': '{{ reload_privilege_tables_now }}'
         echo: yes
-        timeout: 30 # Adjust timeout as needed
+        timeout: 30  

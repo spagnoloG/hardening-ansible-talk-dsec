@@ -1,6 +1,4 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-#
+N = 10
 
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu2204"
@@ -9,17 +7,18 @@ Vagrant.configure("2") do |config|
     libvirt.qemu_use_session = false
   end
 
-  config.vm.define "virt-simple" do |rootNode|
-   rootNode.vm.hostname = "virt-simple"
-    rootNode.vm.provider :libvirt do |libvirt, override|
-      libvirt.memory = 2048 
-      libvirt.nested = true
-      libvirt.cpus = 2
-    end
+  (1..N).each do |i|
+    config.vm.define "ubuntu-server-#{i}" do |us|
+      us.vm.hostname = "ubuntu-server-#{i}"
+      us.vm.provider :libvirt do |libvirt, override|
+        libvirt.memory = 2048
+        libvirt.nested = true
+        libvirt.cpus = 2
+      end
 
-    rootNode.ssh.insert_key = true
-    rootNode.ssh.port = 22
-    rootNode.ssh.compression = true
+      us.ssh.insert_key = true
+      us.ssh.port = 22
+      us.ssh.compression = true
+    end
   end
 end
-
