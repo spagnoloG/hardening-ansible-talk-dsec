@@ -1,6 +1,6 @@
 #!/bin/bash
 
-N=10
+N=5
 
 echo "[all]" >> inventory.ini
 
